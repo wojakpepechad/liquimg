@@ -193,7 +193,7 @@ const UniswapV3Manager = () => {
   }
 
 
-  const LIQUIDITY_CONTROLLER_ADDRESS = "0x21D2eEfa4ed773bc2411829C74b45698D5D1A036"; // Replace with your contract address
+  const LIQUIDITY_CONTROLLER_ADDRESS = "0x80A61B4461a22873F4762eAda0CC158FD4d1cEbF"; // Replace with your contract address
   // Fetch allowance for tokenA
   const tokenAResult = useContractRead({
     address: tokenAAddress,
@@ -262,13 +262,15 @@ const UniswapV3Manager = () => {
     _upperTick: upperTick,
     amount0ToMint: amount0,
     amount1ToMint: amount1,
+    amount0ToMintMin: amount0Min,
+    amount1ToMintMin: amount1Min,
   };
 
   const { config: mintNewPositionConfig } = usePrepareContractWrite({
     address: LIQUIDITY_CONTROLLER_ADDRESS,
     abi: ABILiquidityController,
     functionName: 'mintNewPosition',
-    args: [mintParamsController._lowerTick, mintParamsController._upperTick, mintParamsController.amount0ToMint, mintParamsController.amount1ToMint],
+    args: [mintParamsController._lowerTick, mintParamsController._upperTick, mintParamsController.amount0ToMint, mintParamsController.amount1ToMint, mintParamsController.amount0ToMintMin, mintParamsController.amount1ToMintMin],
   });
 
   // Contract write hook for the mintNewPosition function in the Liquidity Controller
@@ -325,11 +327,14 @@ const UniswapV3Manager = () => {
     args: [tokenId],
   });
 
+  const [decreaseLiquidityAmount, setDecreaseLiquidity] = useState(0);
+
+
   const { config: decreaseLiquidityConfig } = usePrepareContractWrite({
     address: LIQUIDITY_CONTROLLER_ADDRESS,
     abi: ABILiquidityController,
     functionName: 'decreaseLiquidity',
-    args: [tokenId, 1000000000],
+    args: [tokenId, decreaseLiquidityAmount, amount0, amount1],
   });
 
   const { config: increaseLiquidityCurrentRangeConfig } = usePrepareContractWrite({
@@ -568,10 +573,18 @@ const UniswapV3Manager = () => {
       return (
         <div>
           <h2>Position Information</h2>
+          <p>Nonce: {formattedPositionData.nonce}</p>
+          <p>Operator: {formattedPositionData.operator}</p>
+          <p>Token0: {formattedPositionData.token0}</p>
+          <p>Token1: {formattedPositionData.token1}</p>
+          <p>Fee: {formattedPositionData.fee}</p>
           <p>Lower Tick: {formattedPositionData.tickLower}</p>
           <p>Upper Tick: {formattedPositionData.tickUpper}</p>
           <p>Liquidity: {formattedPositionData.liquidity.toString()}</p>
-          {/* Add more fields as needed */}
+          <p>Fee Growth Inside 0 (Last X128): {formattedPositionData.feeGrowthInside0LastX128.toString()}</p>
+          <p>Fee Growth Inside 1 (Last X128): {formattedPositionData.feeGrowthInside1LastX128.toString()}</p>
+          <p>Tokens Owed 0: {formattedPositionData.tokensOwed0.toString()}</p>
+          <p>Tokens Owed 1: {formattedPositionData.tokensOwed1.toString()}</p>
         </div>
       );
     } else {
@@ -579,6 +592,25 @@ const UniswapV3Manager = () => {
     }
   };
   
+  const renderPoolInfo = () => {
+  if (formattedPoolData) {
+    return (
+      <div>
+        <h2>Pool Information</h2>
+        <p>Square Root Price X96: {formattedPoolData.sqrtPriceX96.toString()}</p>
+        <p>Tick: {formattedPoolData.tick}</p>
+        <p>Observation Index: {formattedPoolData.observationIndex}</p>
+        <p>Observation Cardinality: {formattedPoolData.observationCardinality}</p>
+        <p>Observation Cardinality Next: {formattedPoolData.observationCardinalityNext}</p>
+        <p>Fee Protocol: {formattedPoolData.feeProtocol}</p>
+        <p>Unlocked: {formattedPoolData.unlocked ? 'Yes' : 'No'}</p>
+      </div>
+    );
+  } else {
+    return <p>No pool data available</p>;
+  }
+};
+
 
   /*
   
@@ -652,8 +684,13 @@ const UniswapV3Manager = () => {
                 {formattedPoolData ? (
                   <div>
                     Formatted Pool Data:
-                    <pre className={styles.logCode}>{JSON.stringify(formattedPoolData)}
+                    <pre className={styles.logCode}>
+                    {renderPoolInfo()}
                     </pre>
+                    <pre className={styles.logCode}>
+                    {renderPositionInfo()}
+                    </pre>
+
                   </div>
                 ) : (
                   <p>Loading pool data...</p>
@@ -785,7 +822,6 @@ const UniswapV3Manager = () => {
               <ModalContent>
                 <ModalHeader>Position Details</ModalHeader>
                 <ModalBody>
-                {renderPositionInfo()}
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="light" onClick={onClose}>
@@ -795,6 +831,32 @@ const UniswapV3Manager = () => {
                 </ModalFooter>
               </ModalContent>
             </Modal>
+          </div>
+
+          <div className={styles.wrapper}>
+            <div className={styles.container}>
+              <div className={styles.content}>
+                <div>
+                  <h3>1. Fund Controller</h3>
+                  {/* Buttons related to Fund Controller */}
+                  <button className={styles.button} onClick={handleFundContract}>
+                    Fund Contract
+                  </button>
+
+                </div>
+
+
+
+                <div>
+                  <h3>3. Reset</h3>
+                  {/* Buttons related to Reset */}
+
+                  <button className={styles.button} onClick={handleWithdraw}>Withdraw Tokens</button>
+
+                  {/* Add other buttons related to Reset */}
+                </div>
+              </div>
+            </div>
           </div>
 
 
@@ -816,31 +878,6 @@ const UniswapV3Manager = () => {
                   <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
                   <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
 
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.wrapper}>
-            <div className={styles.container}>
-              <div className={styles.content}>
-                <div>
-                  <h3>1. Fund Controller</h3>
-                  {/* Buttons related to Fund Controller */}
-                  <button className={styles.button} onClick={handleFundContract}>
-                    Fund Contract
-                  </button>
-                </div>
-
-
-
-                <div>
-                  <h3>3. Reset</h3>
-                  {/* Buttons related to Reset */}
-
-                  <button className={styles.button} onClick={handleWithdraw}>Withdraw Tokens</button>
-
-                  {/* Add other buttons related to Reset */}
                 </div>
               </div>
             </div>
