@@ -17,6 +17,7 @@ import {
   Button,
   useDisclosure
 } from "@nextui-org/react";
+import PriceCalculator from './PriceCalculator';
 
 const UniswapV3Manager = () => {
   // State for user's positions and other relevant data
@@ -44,6 +45,15 @@ const UniswapV3Manager = () => {
   const tokenADecimals = 18; // Replace with your TokenA decimals
   const tokenBDecimals = 18; // Replace with your TokenB decimals
   const chainId = 42220; // Replace with the chainId for your tokens
+  const [sqrtPriceX96, setSqrtPriceX96] = useState<string>('2018382873588440326581633304624437');
+  const Decimal0 = 18; // Decimal places for token 0
+  const Decimal1 = 18; // Decimal places for token 1
+
+  // Function to handle changes in the input field
+  const handleSqrtPriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSqrtPriceX96(event.target.value);
+  };
+
 
   const amount0Desired = '0'; // Replace with the amount of Token0 desired
   const amount1Desired = '99999999999999999996'; // Replace with the amount of Token1 desired
@@ -656,17 +666,21 @@ const UniswapV3Manager = () => {
                   <span className={styles.infoLabel}>Total Supply:</span>
                   <div className={styles.value}>{totalSupply.toFixed(2)}</div>
                 </div>
-                <div>
-                  <h3>Allowances</h3>
-                  <p>
-                    Allowance to LiquidityController:
-                    <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-                      {LIQUIDITY_CONTROLLER_ADDRESS}
-                    </a>
-                  </p>
-                  <p>TokenA Allowance:<div className={styles.value}>{tokenAAllowance}</div></p>
-                  <p>TokenB Allowance:<div className={styles.value}>{tokenBAllowance}</div></p>
+                <h2 className={styles.blockchainInfo}>Allowances to LiquidityController:</h2>
+
+
+                <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                  {LIQUIDITY_CONTROLLER_ADDRESS}
+                </a>
+                <div className={`${styles.infoRow} ${styles.balanceRow}`}>
+                  <span className={styles.infoLabel}>TokenA Allowance:</span>
+                  <div className={styles.value}>{tokenAAllowance}</div>
                   <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
+
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.infoLabel}>TokenB Allowance:</span>
+                  <div className={styles.value}>{tokenBAllowance}</div>
                   <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
 
                 </div>
@@ -684,72 +698,72 @@ const UniswapV3Manager = () => {
               <div>
                 {/* Render your formatted pool data here */}
                 {formattedPoolData ? (
-                 <div>
-                 <span className={styles.infoLabel}>Pool Result:</span>
-                 <div className={styles.value}>
-                   {poolResult && (
-                     <a
-                       href={`https://celoscan.io/address/${poolResult}`}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       {poolResult}
-                     </a>
-                   )}
-                 </div>
-               
-                 <span className={styles.infoLabel}>Token0 Address:</span>
-                 <div className={styles.value}>
-                   {formattedPositionData && (
-                     <a
-                       href={`https://celoscan.io/address/${formattedPositionData.token0}`}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       {formattedPositionData.token0}
-                     </a>
-                   )}
-                 </div>
-               
-                 <span className={styles.infoLabel}>Token1 Address:</span>
-                 <div className={styles.value}>
-                   {formattedPositionData && (
-                     <a
-                       href={`https://celoscan.io/address/${formattedPositionData.token1}`}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       {formattedPositionData.token1}
-                     </a>
-                   )}
-                 </div>
-               
-                 <span className={styles.infoLabel}>Liquidity Controller:</span>
-                 <div className={styles.value}>
-                   {LIQUIDITY_CONTROLLER_ADDRESS && (
-                     <a
-                       href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       {LIQUIDITY_CONTROLLER_ADDRESS}
-                     </a>
-                   )}
-                 </div>
-               
-                 <span className={styles.infoLabel}>PositionManager Address:</span>
-                 <div className={styles.value}>
-                   {INonfungiblePositionManagerAddress && (
-                     <a
-                       href={`https://celoscan.io/address/${INonfungiblePositionManagerAddress}`}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       {INonfungiblePositionManagerAddress}
-                     </a>
-                   )}
-                 </div>
-               
+                  <div>
+                    <span className={styles.infoLabel}>Pool Result:</span>
+                    <div className={styles.value}>
+                      {poolResult && (
+                        <a
+                          href={`https://celoscan.io/address/${poolResult}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {poolResult}
+                        </a>
+                      )}
+                    </div>
+
+                    <span className={styles.infoLabel}>Token0 Address:</span>
+                    <div className={styles.value}>
+                      {formattedPositionData && (
+                        <a
+                          href={`https://celoscan.io/address/${formattedPositionData.token0}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {formattedPositionData.token0}
+                        </a>
+                      )}
+                    </div>
+
+                    <span className={styles.infoLabel}>Token1 Address:</span>
+                    <div className={styles.value}>
+                      {formattedPositionData && (
+                        <a
+                          href={`https://celoscan.io/address/${formattedPositionData.token1}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {formattedPositionData.token1}
+                        </a>
+                      )}
+                    </div>
+
+                    <span className={styles.infoLabel}>Liquidity Controller:</span>
+                    <div className={styles.value}>
+                      {LIQUIDITY_CONTROLLER_ADDRESS && (
+                        <a
+                          href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {LIQUIDITY_CONTROLLER_ADDRESS}
+                        </a>
+                      )}
+                    </div>
+
+                    <span className={styles.infoLabel}>PositionManager Address:</span>
+                    <div className={styles.value}>
+                      {INonfungiblePositionManagerAddress && (
+                        <a
+                          href={`https://celoscan.io/address/${INonfungiblePositionManagerAddress}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {INonfungiblePositionManagerAddress}
+                        </a>
+                      )}
+                    </div>
+
                     Formatted Pool Data:
                     <pre className={styles.logCode}>
                       {renderPoolInfo()}
@@ -757,7 +771,21 @@ const UniswapV3Manager = () => {
                     <pre className={styles.logCode}>
                       {renderPositionInfo()}
                     </pre>
+                    <div>
+                {/* Input field to set sqrtPriceX96 */}
+                <div>
+                  <label htmlFor="sqrtPriceX96">sqrtPriceX96:</label>
+                  <input
+                    type="text"
+                    id="sqrtPriceX96"
+                    value={sqrtPriceX96}
+                    onChange={handleSqrtPriceChange}
+                  />
+                </div>
 
+                {/* Use the PriceCalculator component and pass the required props */}
+                <PriceCalculator sqrtPriceX96={sqrtPriceX96} Decimal0={Decimal0} Decimal1={Decimal1} />
+              </div>
                   </div>
                 ) : (
                   <p>Loading pool data...</p>
@@ -874,6 +902,32 @@ const UniswapV3Manager = () => {
                 value={amount1}
                 onChange={(e) => setAmount1(e.target.value)}
                 placeholder="Enter amount for Token 1"
+                className={styles.inputField}
+              />
+
+                            {/* Label for amount0ToMint input */}
+                            <label htmlFor="amount0" className={styles.label}>
+                Enter amount for Token 0 Min
+              </label>
+              <input
+                type="number"
+                id="amount0Min"
+                value={amount0Min}
+                onChange={(e) => setAmount0Min(e.target.value)}
+                placeholder="Enter amount for Token 0 Min"
+                className={styles.inputField}
+              />
+
+              {/* Label for amount1ToMint input */}
+              <label htmlFor="amount1" className={styles.label}>
+                Enter amount for Token 1 Min
+              </label>
+              <input
+                type="number"
+                id="amount1Min"
+                value={amount1Min}
+                onChange={(e) => setAmount1Min(e.target.value)}
+                placeholder="Enter amount for Token 1 Min"
                 className={styles.inputField}
               />
 
