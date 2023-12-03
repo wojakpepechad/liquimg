@@ -27,9 +27,8 @@ const UniswapV3Manager = () => {
   const { connect, connectors, error, pendingConnector } = useConnect()
 
   const [totalSupply, setTotalSupply] = useState(0);
-  const [circulatingSupply, setCirculatingSupply] = useState(0);
-  const [lowerTick, setLowerTick] = useState('');
-  const [upperTick, setUpperTick] = useState('');
+  const [lowerTick, setLowerTick] = useState('53580');
+  const [upperTick, setUpperTick] = useState('59460');
   const [amount0, setAmount0] = useState('');
   const [amount1, setAmount1] = useState('');
   const [amount0Min, setAmount0Min] = useState('0');
@@ -160,14 +159,14 @@ const UniswapV3Manager = () => {
 
 
 
-useEffect(() => {
-  if (poolDataResult.data) {
-    const processedData = processPoolData(poolDataResult.data);
-    if (processedData) {
-      setFormattedPoolData(processedData);
+  useEffect(() => {
+    if (poolDataResult.data) {
+      const processedData = processPoolData(poolDataResult.data);
+      if (processedData) {
+        setFormattedPoolData(processedData);
+      }
     }
-  }
-}, [poolDataResult.data, processPoolData]); // Include processPoolData as a dependency
+  }, [poolDataResult.data, processPoolData]); // Include processPoolData as a dependency
 
 
 
@@ -238,10 +237,10 @@ useEffect(() => {
     fee: 3000,
     tickLower: 53580,
     tickUpper: 59460,
-    amount0Desired: '0',
-    amount1Desired: '9999999999999999999996',
-    amount0Min: '0',
-    amount1Min: '9999999999999999996',
+    amount0Desired: amount0,
+    amount1Desired: amount1,
+    amount0Min: amount0Min,
+    amount1Min: amount1Min,
     recipient: '0x5E118C112300DE181CC3aBc65846a4FC2C21Ab95',
     deadline: Math.floor(Date.now() / 1000) + 3600, // Deadline 1 hour from now
   };
@@ -259,10 +258,10 @@ useEffect(() => {
 
   // Prepare mintParams for the mintNewPosition function in the Liquidity Controller
   const mintParamsController = {
-    _lowerTick: 53580,
-    _upperTick: 59460,
-    amount0ToMint: "0",
-    amount1ToMint: "999999999999999999",
+    _lowerTick: lowerTick,
+    _upperTick: upperTick,
+    amount0ToMint: amount0,
+    amount1ToMint: amount1,
   };
 
   const { config: mintNewPositionConfig } = usePrepareContractWrite({
@@ -564,6 +563,22 @@ useEffect(() => {
     onOpen();
   };
 
+  const renderPositionInfo = () => {
+    if (formattedPositionData) {
+      return (
+        <div>
+          <h2>Position Information</h2>
+          <p>Lower Tick: {formattedPositionData.tickLower}</p>
+          <p>Upper Tick: {formattedPositionData.tickUpper}</p>
+          <p>Liquidity: {formattedPositionData.liquidity.toString()}</p>
+          {/* Add more fields as needed */}
+        </div>
+      );
+    } else {
+      return <p>No position data available</p>;
+    }
+  };
+  
 
   /*
   
@@ -649,79 +664,86 @@ useEffect(() => {
 
           <div className={styles.wrapper}>
             <div className={styles.container}>
-            <div>
-                  <h3>2. Mint</h3>
-                  {/* Buttons related to Mint */}
-                  <button className={styles.button} onClick={handleMint} disabled={isMintLoading}>Mint in Position Manager</button>
-                  <button className={styles.button} onClick={handleMintNewPosition}>Mint in Controller</button>
-                  {/* Add other buttons related to Mint */}
-                </div>
-              {/* Input for lower tick */}
+              <div>
+                <h3>2. Mint</h3>
+                {/* Buttons related to Mint */}
+                <button className={styles.button} onClick={handleMint} disabled={isMintLoading}>Mint in Position Manager</button>
+                <button className={styles.button} onClick={handleMintNewPosition}>Mint in Controller</button>
+                {/* Add other buttons related to Mint */}
+              </div>
+              {/* Label for lower tick input */}
+              <label htmlFor="lowerTick" className={styles.label}>
+                Enter lower tick
+              </label>
               <input
                 type="number"
+                id="lowerTick"
                 value={lowerTick}
                 onChange={(e) => setLowerTick(e.target.value)}
                 placeholder="Enter lower tick"
-                className={styles.inputField} />
-              {/* Input for upper tick */}
+                className={styles.inputField}
+              />
+
+              {/* Label for upper tick input */}
+              <label htmlFor="upperTick" className={styles.label}>
+                Enter upper tick
+              </label>
               <input
                 type="number"
+                id="upperTick"
                 value={upperTick}
                 onChange={(e) => setUpperTick(e.target.value)}
                 placeholder="Enter upper tick"
-                className={styles.inputField} />
-              {/* Input for amount0ToMint */}
+                className={styles.inputField}
+              />
+
+              {/* Label for amount0ToMint input */}
+              <label htmlFor="amount0" className={styles.label}>
+                Enter amount for Token 0
+              </label>
               <input
                 type="number"
+                id="amount0"
                 value={amount0}
                 onChange={(e) => setAmount0(e.target.value)}
                 placeholder="Enter amount for Token 0"
-                className={styles.inputField} />
-              {/* Input for amount1ToMint */}
+                className={styles.inputField}
+              />
+
+              {/* Label for amount1ToMint input */}
+              <label htmlFor="amount1" className={styles.label}>
+                Enter amount for Token 1
+              </label>
               <input
                 type="number"
+                id="amount1"
                 value={amount1}
                 onChange={(e) => setAmount1(e.target.value)}
                 placeholder="Enter amount for Token 1"
-                className={styles.inputField} />
-              <div className={styles.spacer} /> {/* New spacer element */}
+                className={styles.inputField}
+              />
 
+              {/* Spacer */}
+              <div className={styles.spacer} />
+
+              {/* Label for Token ID input */}
+              <label htmlFor="tokenId" className={styles.label}>
+                Enter Token ID
+              </label>
               <input
                 type="text"
+                id="tokenId"
                 value={tokenId}
                 onChange={(e) => setTokenId(e.target.value)}
                 placeholder="Enter Token ID"
-                className={styles.inputField} />
+                className={styles.inputField}
+              />
+
               <button className={styles.button} onClick={handleCollectAllFees}>Collect All Fees</button>
               <button className={styles.button} onClick={handleRetrieveNFT}>Retrieve NFT</button>
               <button className={styles.button} onClick={handleDecreaseLiquidity}>Decrease Liquidity</button>
               <button className={styles.button} onClick={handleIncreaseLiquidityCurrentRange}>Increase Liquidity Current Range</button>
 
-            </div>
-          </div>
-
-          <div className={styles.wrapper}>
-            <div className={styles.container}>
-              <div className={styles.content}>
-                <div>
-                  <h3>1. Fund Controller</h3>
-                  {/* Buttons related to Fund Controller */}
-                  <button className={styles.button} onClick={handleFundContract}>
-                    Fund Contract
-                  </button>
-                </div>
-
-
-
-                <div>
-                  <h3>3. Reset</h3>
-                  {/* Buttons related to Reset */}
-
-                  <button className={styles.button} onClick={handleWithdraw}>Withdraw Tokens</button>
-
-                  {/* Add other buttons related to Reset */}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -747,13 +769,13 @@ useEffect(() => {
                   <h2>Positions Controller</h2>
                   {positionsController.map((position, index) => (
                     <Button
-                    key={index}
-                    onClick={() => openModalWithPositionId(parseInt(position))}
-                    className={styles.position}
-                  >
+                      key={index}
+                      onClick={() => openModalWithPositionId(parseInt(position))}
+                      className={styles.position}
+                    >
                       {/* Render position details */}
                       <p>Position {index + 1}: {JSON.stringify(position)}</p>
-                      </Button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -763,8 +785,7 @@ useEffect(() => {
               <ModalContent>
                 <ModalHeader>Position Details</ModalHeader>
                 <ModalBody>
-                  {/* Render position details based on positionTokenId */}
-                  <p>Position {positionTokenId} details go here.</p>
+                {renderPositionInfo()}
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="light" onClick={onClose}>
@@ -800,6 +821,30 @@ useEffect(() => {
             </div>
           </div>
 
+          <div className={styles.wrapper}>
+            <div className={styles.container}>
+              <div className={styles.content}>
+                <div>
+                  <h3>1. Fund Controller</h3>
+                  {/* Buttons related to Fund Controller */}
+                  <button className={styles.button} onClick={handleFundContract}>
+                    Fund Contract
+                  </button>
+                </div>
+
+
+
+                <div>
+                  <h3>3. Reset</h3>
+                  {/* Buttons related to Reset */}
+
+                  <button className={styles.button} onClick={handleWithdraw}>Withdraw Tokens</button>
+
+                  {/* Add other buttons related to Reset */}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div className={styles.wrapperliquidity}>
 
