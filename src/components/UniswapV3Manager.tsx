@@ -160,14 +160,14 @@ const UniswapV3Manager = () => {
 
 
 
-  useEffect(() => {
-    if (poolDataResult.data) {
-      const processedData = processPoolData(poolDataResult.data);
-      if (processedData) {
-        setFormattedPoolData(processedData);
-      }
+useEffect(() => {
+  if (poolDataResult.data) {
+    const processedData = processPoolData(poolDataResult.data);
+    if (processedData) {
+      setFormattedPoolData(processedData);
     }
-  }, [poolDataResult.data]);
+  }
+}, [poolDataResult.data, processPoolData]); // Include processPoolData as a dependency
 
 
 
@@ -443,8 +443,6 @@ const UniswapV3Manager = () => {
     functionName: 'positions',
     args: [positionTokenId],
   });
-
-
 
   // Define the structure of your position data
   interface PositionResponse {
