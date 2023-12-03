@@ -141,10 +141,13 @@ width: 100%;
   .infoRow .value {
 	color: #1a73e8; /* Highlight values */
 	font-weight: bold;
+	text-decoration: none;
   }
   
   .infoRow.balanceRow {
 	margin-bottom: 30px; /* Increased bottom margin for Balance row */
+	text-decoration: none;
+
   }
 
 .wrapperFooter {

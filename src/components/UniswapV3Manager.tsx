@@ -573,6 +573,7 @@ const UniswapV3Manager = () => {
       return (
         <div>
           <h2>Position Information</h2>
+          <p>=======</p>
           <p>Nonce: {formattedPositionData.nonce}</p>
           <p>Operator: {formattedPositionData.operator}</p>
           <p>Token0: {formattedPositionData.token0}</p>
@@ -591,25 +592,26 @@ const UniswapV3Manager = () => {
       return <p>No position data available</p>;
     }
   };
-  
+
   const renderPoolInfo = () => {
-  if (formattedPoolData) {
-    return (
-      <div>
-        <h2>Pool Information</h2>
-        <p>Square Root Price X96: {formattedPoolData.sqrtPriceX96.toString()}</p>
-        <p>Tick: {formattedPoolData.tick}</p>
-        <p>Observation Index: {formattedPoolData.observationIndex}</p>
-        <p>Observation Cardinality: {formattedPoolData.observationCardinality}</p>
-        <p>Observation Cardinality Next: {formattedPoolData.observationCardinalityNext}</p>
-        <p>Fee Protocol: {formattedPoolData.feeProtocol}</p>
-        <p>Unlocked: {formattedPoolData.unlocked ? 'Yes' : 'No'}</p>
-      </div>
-    );
-  } else {
-    return <p>No pool data available</p>;
-  }
-};
+    if (formattedPoolData) {
+      return (
+        <div>
+          <h2>Pool Information</h2>
+          <p>=======</p>
+          <p>Square Root Price X96: {formattedPoolData.sqrtPriceX96.toString()}</p>
+          <p>Tick: {formattedPoolData.tick}</p>
+          <p>Observation Index: {formattedPoolData.observationIndex}</p>
+          <p>Observation Cardinality: {formattedPoolData.observationCardinality}</p>
+          <p>Observation Cardinality Next: {formattedPoolData.observationCardinalityNext}</p>
+          <p>Fee Protocol: {formattedPoolData.feeProtocol}</p>
+          <p>Unlocked: {formattedPoolData.unlocked ? 'Yes' : 'No'}</p>
+        </div>
+      );
+    } else {
+      return <p>No pool data available</p>;
+    }
+  };
 
 
   /*
@@ -654,19 +656,19 @@ const UniswapV3Manager = () => {
                   <span className={styles.infoLabel}>Total Supply:</span>
                   <div className={styles.value}>{totalSupply.toFixed(2)}</div>
                 </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>Pool Result:</span>
-                  <div className={styles.value}>
-                    {poolResult && (
-                      <a
-                        href={`https://celoscan.io/address/${poolResult}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {poolResult}
-                      </a>
-                    )}
-                  </div>
+                <div>
+                  <h3>Allowances</h3>
+                  <p>
+                    Allowance to LiquidityController:
+                    <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                      {LIQUIDITY_CONTROLLER_ADDRESS}
+                    </a>
+                  </p>
+                  <p>TokenA Allowance:<div className={styles.value}>{tokenAAllowance}</div></p>
+                  <p>TokenB Allowance:<div className={styles.value}>{tokenBAllowance}</div></p>
+                  <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
+                  <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
+
                 </div>
               </div>
 
@@ -682,13 +684,78 @@ const UniswapV3Manager = () => {
               <div>
                 {/* Render your formatted pool data here */}
                 {formattedPoolData ? (
-                  <div>
+                 <div>
+                 <span className={styles.infoLabel}>Pool Result:</span>
+                 <div className={styles.value}>
+                   {poolResult && (
+                     <a
+                       href={`https://celoscan.io/address/${poolResult}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                     >
+                       {poolResult}
+                     </a>
+                   )}
+                 </div>
+               
+                 <span className={styles.infoLabel}>Token0 Address:</span>
+                 <div className={styles.value}>
+                   {formattedPositionData && (
+                     <a
+                       href={`https://celoscan.io/address/${formattedPositionData.token0}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                     >
+                       {formattedPositionData.token0}
+                     </a>
+                   )}
+                 </div>
+               
+                 <span className={styles.infoLabel}>Token1 Address:</span>
+                 <div className={styles.value}>
+                   {formattedPositionData && (
+                     <a
+                       href={`https://celoscan.io/address/${formattedPositionData.token1}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                     >
+                       {formattedPositionData.token1}
+                     </a>
+                   )}
+                 </div>
+               
+                 <span className={styles.infoLabel}>Liquidity Controller:</span>
+                 <div className={styles.value}>
+                   {LIQUIDITY_CONTROLLER_ADDRESS && (
+                     <a
+                       href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                     >
+                       {LIQUIDITY_CONTROLLER_ADDRESS}
+                     </a>
+                   )}
+                 </div>
+               
+                 <span className={styles.infoLabel}>PositionManager Address:</span>
+                 <div className={styles.value}>
+                   {INonfungiblePositionManagerAddress && (
+                     <a
+                       href={`https://celoscan.io/address/${INonfungiblePositionManagerAddress}`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                     >
+                       {INonfungiblePositionManagerAddress}
+                     </a>
+                   )}
+                 </div>
+               
                     Formatted Pool Data:
                     <pre className={styles.logCode}>
-                    {renderPoolInfo()}
+                      {renderPoolInfo()}
                     </pre>
                     <pre className={styles.logCode}>
-                    {renderPositionInfo()}
+                      {renderPositionInfo()}
                     </pre>
 
                   </div>
@@ -698,6 +765,56 @@ const UniswapV3Manager = () => {
               </div>
             </div>
           </div>
+
+          <div className={styles.wrapper}>
+            <div className={styles.container}>
+              <div className={styles.positionList}>
+                {loading && <p className={styles.loading}>Loading...</p>}
+                {error && <p className={styles.error}>Error: {fail}</p>}
+                <div>
+                  <h2>Positions User</h2>
+                  {positions.map((position, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => openModalWithPositionId(parseInt(position))}
+                      className={styles.position}
+                    >
+                      {/* Render position details */}
+                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
+                    </Button>
+                  ))}
+                </div>
+                <div>
+                  <h2>Positions Controller</h2>
+                  {positionsController.map((position, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => openModalWithPositionId(parseInt(position))}
+                      className={styles.position}
+                    >
+                      {/* Render position details */}
+                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalContent>
+                <ModalHeader>Position Details</ModalHeader>
+                <ModalBody>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onClick={onClose}>
+                    Close
+                  </Button>
+                  {/* Add other modal buttons as needed */}
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </div>
+
 
           <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -786,55 +903,6 @@ const UniswapV3Manager = () => {
 
           <div className={styles.wrapper}>
             <div className={styles.container}>
-              <div className={styles.positionList}>
-                {loading && <p className={styles.loading}>Loading...</p>}
-                {error && <p className={styles.error}>Error: {fail}</p>}
-                <div>
-                  <h2>Positions User</h2>
-                  {positions.map((position, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => openModalWithPositionId(parseInt(position))}
-                      className={styles.position}
-                    >
-                      {/* Render position details */}
-                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
-                    </Button>
-                  ))}
-                </div>
-                <div>
-                  <h2>Positions Controller</h2>
-                  {positionsController.map((position, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => openModalWithPositionId(parseInt(position))}
-                      className={styles.position}
-                    >
-                      {/* Render position details */}
-                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <Modal isOpen={isOpen} onClose={onClose}>
-              <ModalContent>
-                <ModalHeader>Position Details</ModalHeader>
-                <ModalBody>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onClick={onClose}>
-                    Close
-                  </Button>
-                  {/* Add other modal buttons as needed */}
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
-          </div>
-
-          <div className={styles.wrapper}>
-            <div className={styles.container}>
               <div className={styles.content}>
                 <div>
                   <h3>1. Fund Controller</h3>
@@ -859,29 +927,6 @@ const UniswapV3Manager = () => {
             </div>
           </div>
 
-
-          <div className={styles.wrapper}>
-            <div className={styles.container}>
-
-              <div className={styles.content}>
-
-                <div>
-                  <h3>Allowances</h3>
-                  <p>
-                    Allowance to LiquidityController:
-                    <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-                      {LIQUIDITY_CONTROLLER_ADDRESS}
-                    </a>
-                  </p>
-                  <p>TokenA Allowance: {tokenAAllowance}</p>
-                  <p>TokenB Allowance: {tokenBAllowance}</p>
-                  <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
-                  <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
-
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className={styles.wrapperliquidity}>
 
