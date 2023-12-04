@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import bn from 'bignumber.js';
+import BigNumber from 'bignumber.js';
+import styles from "@/styles/Home.module.css";
+import { BigNumberish } from 'ethers';
 
-// Configure bignumber.js to handle precision
-bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 });
+BigNumber.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 });
 
 interface PriceCalculatorProps {
   sqrtPriceX96: string;
@@ -14,22 +15,29 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({ sqrtPriceX96, Decimal
   const [calculatedPrice, setCalculatedPrice] = useState<string | null>(null);
 
   const calculatePrice = () => {
-    const sqrtPriceX96BN = new bn(sqrtPriceX96);
-    const price = sqrtPriceX96BN
-      .dividedBy(new bn(2).exponentiatedBy(96)) // Divide by 2^96
-      .multipliedBy(new bn(10).exponentiatedBy(Decimal0 - Decimal1)) // Adjust for decimals
-      .toFixed(2); // Set the desired decimal places to 2
+    try {
+      const sqrtPriceX96BN = new BigNumber(sqrtPriceX96);
+      const price0 = sqrtPriceX96BN
+        .dividedBy(new BigNumber(2).exponentiatedBy(96))
+        .pow(2)
+        .dividedBy(new BigNumber(10).pow(Decimal1 - Decimal0))
+        .toFixed(Decimal1);
 
-    setCalculatedPrice(price);
+      const price1 = new BigNumber(1).dividedBy(new BigNumber(price0)).toFixed(Decimal1);
+
+      setCalculatedPrice(`Token 0 to Token 1: ${price0}, Token 1 to Token 0: ${price1}`);
+    } catch (error) {
+      console.error('Error calculating price:', error);
+      setCalculatedPrice(null);
+    }
   };
 
   return (
     <div>
-      <button onClick={calculatePrice}>Calculate Price</button>
-      {calculatedPrice !== null && (
+      <button className={styles.button} onClick={calculatePrice}>Calculate Price</button>
+      {calculatedPrice && (
         <div>
-          <p>Calculated Price (Token 0 to Token 1): {calculatedPrice}</p>
-          <p>Calculated Price (Token 1 to Token 0): {1 / parseFloat(calculatedPrice)}</p>
+          <p>Calculated Prices: {calculatedPrice}</p>
         </div>
       )}
     </div>

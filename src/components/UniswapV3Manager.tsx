@@ -153,7 +153,7 @@ const UniswapV3Manager = () => {
       ] = data;
 
       return {
-        sqrtPriceX96: Number(sqrtPriceX96),
+        sqrtPriceX96: BigInt(sqrtPriceX96),
         tick,
         observationIndex,
         observationCardinality,
