@@ -45,7 +45,7 @@ const UniswapV3Manager = () => {
   const tokenADecimals = 18; // Replace with your TokenA decimals
   const tokenBDecimals = 18; // Replace with your TokenB decimals
   const chainId = 42220; // Replace with the chainId for your tokens
-  const [sqrtPriceX96, setSqrtPriceX96] = useState<string>('2018382873588440326581633304624437');
+  const [sqrtPriceX96, setSqrtPriceX96] = useState<string>('');
   const Decimal0 = 18; // Decimal places for token 0
   const Decimal1 = 18; // Decimal places for token 1
 
@@ -791,12 +791,15 @@ const UniswapV3Manager = () => {
                     <div>
                 {/* Input field to set sqrtPriceX96 */}
                 <div>
-                  <label htmlFor="sqrtPriceX96">sqrtPriceX96:</label>
+                <div className={styles.spacer} />
+
+                    <span className={styles.infoLabel}>sqrtPriceX96:</span>
                   <input
                     type="text"
                     id="sqrtPriceX96"
                     value={sqrtPriceX96}
                     onChange={handleSqrtPriceChange}
+                    className={styles.inputField}
                   />
                 </div>
 
