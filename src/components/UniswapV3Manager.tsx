@@ -592,7 +592,7 @@ const UniswapV3Manager = () => {
 
   const openModalWithPositionId = (positionId: number) => {
     setPositionTokenId(positionId);
-    onOpen();
+    //onOpen();
   };
 
   const renderPositionInfo = () => {
