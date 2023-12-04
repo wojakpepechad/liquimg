@@ -203,7 +203,7 @@ const UniswapV3Manager = () => {
   }
 
 
-  const LIQUIDITY_CONTROLLER_ADDRESS = "0x80A61B4461a22873F4762eAda0CC158FD4d1cEbF"; // Replace with your contract address
+  const LIQUIDITY_CONTROLLER_ADDRESS = "0x8dA740364cCa222EB2fA9100D6CA9EdA8c5152CA"; // Replace with your contract address
   // Fetch allowance for tokenA
   const tokenAResult = useContractRead({
     address: tokenAAddress,
@@ -347,12 +347,27 @@ const UniswapV3Manager = () => {
     args: [tokenId, decreaseLiquidityAmount, amount0, amount1],
   });
 
+  const { config: decreaseLoopLiquidityConfig } = usePrepareContractWrite({
+    address: LIQUIDITY_CONTROLLER_ADDRESS,
+    abi: ABILiquidityController,
+    functionName: 'loopDecrease',
+    args: [tokenId, decreaseLiquidityAmount, amount0, amount1],
+  });
+
   const { config: increaseLiquidityCurrentRangeConfig } = usePrepareContractWrite({
     address: LIQUIDITY_CONTROLLER_ADDRESS,
     abi: ABILiquidityController,
     functionName: 'increaseLiquidityCurrentRange',
-    args: [tokenId, amount0Desired, amount1Desired],
+    args: [tokenId, amount0Desired, amount1Desired, amount0Min, amount1Min],
   });
+
+  const { config: increaseLoopLiquidityConfig } = usePrepareContractWrite({
+    address: LIQUIDITY_CONTROLLER_ADDRESS,
+    abi: ABILiquidityController,
+    functionName: 'loopIncrease',
+    args: [tokenId, decreaseLiquidityAmount, amount0, amount1],
+  });
+
 
   // Contract Write Hooks
   const { write: retrieveNFT } = useContractWrite(retrieveNFTConfig);
@@ -360,7 +375,9 @@ const UniswapV3Manager = () => {
   const { write: fundContract } = useContractWrite(fundContractConfig);
   const { write: collectAllFees } = useContractWrite(collectAllFeesConfig);
   const { write: decreaseLiquidity } = useContractWrite(decreaseLiquidityConfig);
+  const { write: decreaseLoopLiquidity } = useContractWrite(decreaseLoopLiquidityConfig);
   const { write: increaseLiquidityCurrentRange } = useContractWrite(increaseLiquidityCurrentRangeConfig);
+  const { write: increaseLoopLiquidity } = useContractWrite(increaseLoopLiquidityConfig);
 
   // Handler Functions
   const handleRetrieveNFT = () => {
