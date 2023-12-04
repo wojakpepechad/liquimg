@@ -24,7 +24,7 @@ const DextChartV3 = () => {
 export const DEX = () => {
     return (
         <div className={styles.dexContainer}>
-            <h2 className={styles.dexHeading}>COOL DEX</h2>
+            <h2 className={styles.dexHeading}></h2>
             <div className={styles.chartSwapperContainer}>
                 <DextChartV3 />
             </div>

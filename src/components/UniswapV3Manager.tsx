@@ -337,7 +337,7 @@ const UniswapV3Manager = () => {
     args: [tokenId],
   });
 
-  const [decreaseLiquidityAmount, setDecreaseLiquidity] = useState(0);
+  const [decreaseLiquidityAmount, setDecreaseLiquidity] = useState('');
 
 
   const { config: decreaseLiquidityConfig } = usePrepareContractWrite({
@@ -950,6 +950,7 @@ const UniswapV3Manager = () => {
 
               {/* Spacer */}
               <div className={styles.spacer} />
+              <button className={styles.button} onClick={handleIncreaseLiquidityCurrentRange}>Increase Liquidity Current Range</button>
 
               {/* Label for Token ID input */}
               <label htmlFor="tokenId" className={styles.label}>
@@ -966,38 +967,22 @@ const UniswapV3Manager = () => {
 
               <button className={styles.button} onClick={handleCollectAllFees}>Collect All Fees</button>
               <button className={styles.button} onClick={handleRetrieveNFT}>Retrieve NFT</button>
+              <div className={styles.spacer} />
+
+              <label htmlFor="tokenId" className={styles.label}>
+                Decrease Liquidity
+              </label>
+              <input
+                type="number"
+                id="decreaseLiquidityAmount"
+                value={decreaseLiquidityAmount}
+                onChange={(e) => setDecreaseLiquidity(e.target.value)}
+                placeholder="Enter decreaseLiquidityAmount"
+                className={styles.inputField}
+              />
               <button className={styles.button} onClick={handleDecreaseLiquidity}>Decrease Liquidity</button>
-              <button className={styles.button} onClick={handleIncreaseLiquidityCurrentRange}>Increase Liquidity Current Range</button>
-
             </div>
           </div>
-
-          <div className={styles.wrapper}>
-            <div className={styles.container}>
-              <div className={styles.content}>
-                <div>
-                  <h3>1. Fund Controller</h3>
-                  {/* Buttons related to Fund Controller */}
-                  <button className={styles.button} onClick={handleFundContract}>
-                    Fund Contract
-                  </button>
-
-                </div>
-
-
-
-                <div>
-                  <h3>3. Reset</h3>
-                  {/* Buttons related to Reset */}
-
-                  <button className={styles.button} onClick={handleWithdraw}>Withdraw Tokens</button>
-
-                  {/* Add other buttons related to Reset */}
-                </div>
-              </div>
-            </div>
-          </div>
-
 
           <div className={styles.wrapperliquidity}>
 
