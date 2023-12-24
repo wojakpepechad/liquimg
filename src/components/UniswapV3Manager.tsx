@@ -41,7 +41,7 @@ const UniswapV3Manager = () => {
 
   // Define your token constants
   const tokenAAddress = '0x471EcE3750Da237f93B8E339c536989b8978a438'; // Replace with your TokenA address
-  const tokenBAddress = '0xB62c22347cb7335f6aE02EbA4D2e4e086ab0b883'; // Replace with your TokenB address
+  const tokenBAddress = '0x765DE816845861e75A25fCA122bb6898B8B1282a'; // Replace with your TokenB address
   const tokenADecimals = 18; // Replace with your TokenA decimals
   const tokenBDecimals = 18; // Replace with your TokenB decimals
   const chainId = 42220; // Replace with the chainId for your tokens
@@ -595,7 +595,7 @@ const UniswapV3Manager = () => {
     //onOpen();
   };
 
-  const renderPositionInfo = () => {
+  const PositionInfo = () => {
     if (formattedPositionData) {
       return (
         <div>
@@ -620,7 +620,7 @@ const UniswapV3Manager = () => {
     }
   };
 
-  const renderPoolInfo = () => {
+  const PoolInfo = () => {
     if (formattedPoolData) {
       return (
         <div>
@@ -640,75 +640,69 @@ const UniswapV3Manager = () => {
     }
   };
 
-
-  /*
-  
-      const initializeTokensAndPool = () => {
-        const tokenA = new Token(chainId, tokenAAddress, tokenADecimals);
-        const tokenB = new Token(chainId, tokenBAddress, tokenBDecimals);
-    
-        // Dummy values for pool initialization - replace with real values as needed
-        //const sqrtRatioX96 = ethers.BigNumber.from('...');
-        //const liquidity = ethers.BigNumber.from('...');
-        const tickCurrent = 0;
-    
-        const pool = new Pool(
-          tokenA,
-          tokenB,
-          3000, // Fee amount - replace as needed
-          sqrtRatioX96,
-          liquidity,
-          tickCurrent,
-        );
-    
-        return { tokenA, tokenB, pool };
-      };
-    */
-  return (
-    <div>
-      <h2 className={styles.heading}>Uniswap V3 Positions Manager</h2>
-      <div className={styles.dapp}>
-        {isConnected ? (<><div>
-
+  const Positions = () => {
+    if (positions) {
+      return (
+        <div>
           <div className={styles.wrapper}>
             <div className={styles.container}>
-
-              <div className={styles.content}>
-                <h2 className={styles.blockchainInfo}>Blockchain Info</h2>
-                <div className={`${styles.infoRow} ${styles.balanceRow}`}>
-                  <span className={styles.infoLabel}>Balance:</span>
-                  <div className={styles.value}>{userBalance.toFixed(2)} Token A</div>
+              <div className={styles.positionList}>
+                {loading && <p className={styles.loading}>Loading...</p>}
+                {error && <p className={styles.error}>Error: {fail}</p>}
+                <div>
+                  <h2>Positions User</h2>
+                  {positions.map((position, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => openModalWithPositionId(parseInt(position))}
+                      className={styles.position}
+                    >
+                      {/* Render position details */}
+                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
+                    </Button>
+                  ))}
                 </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>Total Supply:</span>
-                  <div className={styles.value}>{totalSupply.toFixed(2)}</div>
-                </div>
-                <h2 className={styles.blockchainInfo}>Allowances to LiquidityController:</h2>
-
-
-                <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
-                  {LIQUIDITY_CONTROLLER_ADDRESS}
-                </a>
-                <div className={`${styles.infoRow} ${styles.balanceRow}`}>
-                  <span className={styles.infoLabel}>TokenA Allowance:</span>
-                  <div className={styles.value}>{tokenAAllowance}</div>
-                  <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
-
-                </div>
-                <div className={styles.infoRow}>
-                  <span className={styles.infoLabel}>TokenB Allowance:</span>
-                  <div className={styles.value}>{tokenBAllowance}</div>
-                  <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
-
+                <div>
+                  <h2>Positions Controller</h2>
+                  {positionsController.map((position, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => openModalWithPositionId(parseInt(position))}
+                      className={styles.position}
+                    >
+                      {/* Render position details */}
+                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
+                    </Button>
+                  ))}
                 </div>
               </div>
-
             </div>
 
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalContent>
+                <ModalHeader>Position Details</ModalHeader>
+                <ModalBody>
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onClick={onClose}>
+                    Close
+                  </Button>
+                  {/* Add other modal buttons as needed */}
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </div>
-
         </div>
+      );
+    } else {
+      return <p>No pool data available</p>;
+    }
+  };
 
+  const Info = () => {
+    if (formattedPoolData) {
+      return (
+        <div>
           <div className={styles.wrapper}>
             <div className={styles.container}>
 
@@ -783,29 +777,29 @@ const UniswapV3Manager = () => {
 
                     Formatted Pool Data:
                     <pre className={styles.logCode}>
-                      {renderPoolInfo()}
+                      {PoolInfo()}
                     </pre>
                     <pre className={styles.logCode}>
-                      {renderPositionInfo()}
+                      {PositionInfo()}
                     </pre>
                     <div>
-                {/* Input field to set sqrtPriceX96 */}
-                <div>
-                <div className={styles.spacer} />
+                      {/* Input field to set sqrtPriceX96 */}
+                      <div>
+                        <div className={styles.spacer} />
 
-                    <span className={styles.infoLabel}>sqrtPriceX96:</span>
-                  <input
-                    type="text"
-                    id="sqrtPriceX96"
-                    value={sqrtPriceX96}
-                    onChange={handleSqrtPriceChange}
-                    className={styles.inputField}
-                  />
-                </div>
+                        <span className={styles.infoLabel}>sqrtPriceX96:</span>
+                        <input
+                          type="text"
+                          id="sqrtPriceX96"
+                          value={sqrtPriceX96}
+                          onChange={handleSqrtPriceChange}
+                          className={styles.inputField}
+                        />
+                      </div>
 
-                {/* Use the PriceCalculator component and pass the required props */}
-                <PriceCalculator sqrtPriceX96={sqrtPriceX96} Decimal0={Decimal0} Decimal1={Decimal1} />
-              </div>
+                      {/* Use the PriceCalculator component and pass the required props */}
+                      <PriceCalculator sqrtPriceX96={sqrtPriceX96} Decimal0={Decimal0} Decimal1={Decimal1} />
+                    </div>
                   </div>
                 ) : (
                   <p>Loading pool data...</p>
@@ -814,56 +808,65 @@ const UniswapV3Manager = () => {
             </div>
           </div>
 
+        </div>
+      );
+    } else {
+      return <p>No pool data available</p>;
+    }
+  };
+
+  const UserInfo = () => {
+    if (formattedPoolData) {
+      return (
+        <div>
           <div className={styles.wrapper}>
             <div className={styles.container}>
-              <div className={styles.positionList}>
-                {loading && <p className={styles.loading}>Loading...</p>}
-                {error && <p className={styles.error}>Error: {fail}</p>}
-                <div>
-                  <h2>Positions User</h2>
-                  {positions.map((position, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => openModalWithPositionId(parseInt(position))}
-                      className={styles.position}
-                    >
-                      {/* Render position details */}
-                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
-                    </Button>
-                  ))}
+
+              <div className={styles.content}>
+                <h2 className={styles.blockchainInfo}>Blockchain Info</h2>
+                <div className={`${styles.infoRow} ${styles.balanceRow}`}>
+                  <span className={styles.infoLabel}>Balance:</span>
+                  <div className={styles.value}>{userBalance.toFixed(2)} Token A</div>
                 </div>
-                <div>
-                  <h2>Positions Controller</h2>
-                  {positionsController.map((position, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => openModalWithPositionId(parseInt(position))}
-                      className={styles.position}
-                    >
-                      {/* Render position details */}
-                      <p>Position {index + 1}: {JSON.stringify(position)}</p>
-                    </Button>
-                  ))}
+                <div className={styles.infoRow}>
+                  <span className={styles.infoLabel}>Total Supply:</span>
+                  <div className={styles.value}>{totalSupply.toFixed(2)}</div>
+                </div>
+                <h2 className={styles.blockchainInfo}>Allowances to LiquidityController:</h2>
+
+
+                <a href={`https://celoscan.io/address/${LIQUIDITY_CONTROLLER_ADDRESS}`} target="_blank" rel="noopener noreferrer">
+                  {LIQUIDITY_CONTROLLER_ADDRESS}
+                </a>
+                <div className={`${styles.infoRow} ${styles.balanceRow}`}>
+                  <span className={styles.infoLabel}>TokenA Allowance:</span>
+                  <div className={styles.value}>{tokenAAllowance}</div>
+                  <button className={styles.button} onClick={approveTokenA} disabled={isApprovingTokenA}>Approve Token A</button>
+
+                </div>
+                <div className={styles.infoRow}>
+                  <span className={styles.infoLabel}>TokenB Allowance:</span>
+                  <div className={styles.value}>{tokenBAllowance}</div>
+                  <button className={styles.button} onClick={approveTokenB} disabled={isApprovingTokenB}>Approve Token B</button>
+
                 </div>
               </div>
+
             </div>
 
-            <Modal isOpen={isOpen} onClose={onClose}>
-              <ModalContent>
-                <ModalHeader>Position Details</ModalHeader>
-                <ModalBody>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onClick={onClose}>
-                    Close
-                  </Button>
-                  {/* Add other modal buttons as needed */}
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
           </div>
 
+        </div>
+      );
+    } else {
+      return <p>No pool data available</p>;
+    }
+  };
 
+  const Mint = () => {
+    if (formattedPoolData) {
+      return (
+        <div>
           <div className={styles.wrapper}>
             <div className={styles.container}>
               <div>
@@ -925,8 +928,8 @@ const UniswapV3Manager = () => {
                 className={styles.inputField}
               />
 
-                            {/* Label for amount0ToMint input */}
-                            <label htmlFor="amount0" className={styles.label}>
+              {/* Label for amount0ToMint input */}
+              <label htmlFor="amount0" className={styles.label}>
                 Enter amount for Token 0 Min
               </label>
               <input
@@ -987,12 +990,28 @@ const UniswapV3Manager = () => {
             </div>
           </div>
 
+        </div>
+      );
+    } else {
+      return <p>No pool data available</p>;
+    }
+  };
+
+  return (
+    <div className={styles.dapp}>
+      <h2 className={styles.heading}>Uniswap V3 Positions Manager</h2>
+      <div className={styles.dapp}>
+        {isConnected ? (<><div>
+        </div>
+        <UserInfo />
+        <Info />
+        <Positions />
+        <Mint />
           <div className={styles.wrapperliquidity}>
 
             <div className={styles.liquidity}><UserLiquidity />
             </div>
           </div>
-
         </>
         ) : (
           <div className={styles.content}>
